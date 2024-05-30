@@ -142,3 +142,21 @@ function getBooks() {
 function getBook(id) {
   return data.find((d) => d.id === id);
 }
+
+// Destructuring object
+const book = getBook(1);
+const { title, author, pages, publicationDate, genres } = book;
+// Destructuring array
+// Genres is an array
+// spread can only go at the end of the array
+const [primaryGenre, secondaryGenre, ...others] = genres;
+console.log(primaryGenre, secondaryGenre);
+console.log(others);
+
+// Spread operator
+const newGenres = [...genres, "epic fantasy"];
+newGenres;
+
+const updatedBook = { ...book, moviePublicationDate: "2001-12-19", pages: 1 };
+updatedBook;
+book;
