@@ -160,3 +160,18 @@ newGenres;
 const updatedBook = { ...book, moviePublicationDate: "2001-12-19", pages: 1 };
 updatedBook;
 book;
+
+// Array.map()
+const books = getBooks();
+
+// example
+// const test = [1, 2, 3, 4, 5].map((el) => el * 2);
+// test;
+
+const titles = books.map((book) => book.title);
+titles;
+
+// first: callback function - accumulator (the current value of the final value that we want to boil the array down to)
+// second: starter value
+const pagesAllBooks = books.reduce((acc, book) => acc + book.pages, 0);
+pagesAllBooks;
