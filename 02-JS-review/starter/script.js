@@ -175,3 +175,56 @@ titles;
 // second: starter value
 const pagesAllBooks = books.reduce((acc, book) => acc + book.pages, 0);
 pagesAllBooks;
+
+// Array.sort()
+// a and b are current and next value
+const x = [3, 7, 1, 9, 6];
+const sorted = x.sort((a, b) => a - b); // ascending
+sorted;
+const descending = x.sort((a, b) => b - a); // descending
+descending;
+x;
+
+// You should sort a copy of an array instead
+const xy = [3, 7, 1, 9, 6];
+const xysorted = x.slice().sort((a, b) => a - b); // ascending
+sorted; // [1, 3, 6, 7, 9]
+x; // [3, 7, 1, 9, 6]
+
+const sortedByPages = books.slice().sort((a, b) => b.pages - a.pages);
+sortedByPages;
+
+// Working with immutable arrays
+// 1) Add book object to array
+const newBook = {
+  id: 6,
+  title: "Harry Potter and the Chamber of Secrets",
+  author: "J.K. Rowling",
+};
+const booksAfterAdd = [...books, newBook];
+booksAfterAdd;
+
+// 2) Delete book object from array
+const booksAfterDelete = booksAfterAdd.filter((book) => book.id !== 3);
+booksAfterDelete;
+
+// 3} Update book object in the array
+const booksAfterUpdate = booksAfterDelete.map((book) =>
+  book.id === 1 ? { ...book, pages: 122223232 } : book
+);
+booksAfterUpdate;
+
+// 'then' will be executed the moment the data has been retrieved
+// .json() is also an asynchronous operation
+// fetch("https://jsonplaceholder.typicode.com/todos")
+//   .then((res) => res.json())
+//   .then((data) => console.log(data));
+
+async function getTodos() {
+  const res = await fetch("https://jsonplaceholder.typicode.com/todos");
+  const data = await res.json();
+  console.log(data);
+  console.log("json");
+}
+
+getTodos();
