@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import "./index.css";
 
 const pizzaData = [
   {
@@ -48,11 +49,11 @@ const pizzaData = [
 
 function App() {
   return (
-    <>
+    <div className="container">
       <Header />
       <Menu />
       <Footer />
-    </>
+    </div>
   );
 }
 
@@ -65,46 +66,64 @@ root.render(
 );
 
 function Header() {
-  const style = { color: "red", fontSize: "55px" };
-  return <h1 style={style}>Fast React Pizza Co.</h1>;
+  // const style = { color: "red", fontSize: "55px" };
+  const style = {};
+  return (
+    <header className="header">
+      <h1 style={style}>Fast React Pizza Co.</h1>
+    </header>
+  );
 }
 
 function Menu() {
   return (
-    <div>
+    <main className="menu">
       <h2> Our menu</h2>
-      <Pizza />
-      <Pizza />
-      <Pizza />
-      <Pizza />
-    </div>
+      <Pizza
+        name="Pizza Spinaci"
+        ingredients="Tomato, mozarella, ham, aragula, and burrata cheese"
+        photoName="pizzas/spinaci.jpg"
+        price={10}
+      />
+
+      <Pizza
+        name="Pizza Funghi"
+        ingredients="Tomato, mushrooms, ham, aragula, and burrata cheese"
+        photoName="pizzas/funghi.jpg"
+        price={12}
+      />
+    </main>
   );
 }
 
+function Pizza(props) {
+  return (
+    <div className="pizza">
+      <img src={props.photoName} alt={props.name} />
+      <div>
+        <h3>{props.name}</h3>
+        <p>{props.ingredients}</p>
+        <span>${props.price + 3}</span>
+      </div>
+    </div>
+  );
+}
 function Footer() {
   const hour = new Date().getHours();
-  console.log(hour);
   const openHour = 8;
   const closeHour = 22;
   const isOpen = hour >= openHour && hour <= closeHour;
-  console.log(isOpen);
   // if (hour >= openHour && hour <= closeHour) {
   //   alert("We're currently open");
   // } else alert("Sorry, we're closed");
 
   return (
-    <footer>{new Date().toLocaleTimeString()}We are currently open!</footer>
+    <footer className="footer">
+      {new Date().toLocaleTimeString()}.{" "}
+      {isOpen ? "We are currently open!" : "Sorry, we are closed"}
+    </footer>
   );
 }
 
-function Pizza() {
-  return (
-    <div>
-      <img src="pizzas/prosciutto.jpg" alt="Prosciutto Pizza" />
-      <h2>Pizza Prosciutto</h2>
-      <p>Tomato, mozarella, ham, aragula, and burrata cheese</p>
-    </div>
-  );
-}
 // Before v18
 // React.render(<App />);
