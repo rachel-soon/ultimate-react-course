@@ -26,6 +26,10 @@ export default function App() {
   );
 }
 
+// console.log(<DifferentContent />); // returns type: DifferentContent()
+// console.log(DifferentContent()); // this is bad - React doesn't see this as a component instance - just a raw HTML element
+// the 'div' becomes exposed // returns type: 'div'
+
 function Tabbed({ content }) {
   const [activeTab, setActiveTab] = useState(0);
 
