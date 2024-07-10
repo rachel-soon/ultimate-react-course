@@ -1,8 +1,21 @@
 import { useState } from "react";
+import PropTypes from "prop-types";
 
 const containerStyle = { display: "flex", alignItems: "center", gap: "16px" };
 const startContainerStyle = {
   display: "flex",
+};
+
+// React built-in validation & typing (without typescript)
+StarRating.propTypes = {
+  // PropTypes.number.isRequired
+  maxRating: PropTypes.number,
+  color: PropTypes.string,
+  size: PropTypes.string,
+  className: PropTypes.string,
+  messages: PropTypes.array,
+  defaultRating: PropTypes.number,
+  onSetRating: PropTypes.func,
 };
 
 // this is how you set a default value for a prop
