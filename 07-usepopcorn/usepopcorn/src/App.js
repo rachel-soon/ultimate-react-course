@@ -57,35 +57,59 @@ export default function App() {
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const query = "howl's moving castle";
+  // const tempQuery = "howl's moving castle";
+  const [query, setQuery] = useState("inception");
+
+  // useEffect(function () {
+  //   console.log("After the initial render");
+  // }, []); // this will only run after browser paint
+
+  // useEffect(function () {
+  //   console.log("After every render");
+  // }); // this will run after EVERY render
+
+  // console.log("During render"); // this will run during render
+
+  // useEffect(
+  //   function () {
+  //     console.log("D");
+  //   },
+  //   [query]
+  // );
 
   // How to use async await in useEffect hook
-  useEffect(function () {
-    async function fetchMovies() {
-      try {
-        setIsLoading(true);
+  useEffect(
+    function () {
+      async function fetchMovies() {
+        try {
+          setIsLoading(true);
+          setError("");
+          const res = await fetch(
+            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+          );
 
-        const res = await fetch(
-          `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
-        );
+          if (!res.ok) {
+            throw new Error("Something went wrong with fetching movies");
+          }
+          const data = await res.json();
+          if (data.Response === "False") throw new Error("Movie not found");
 
-        if (!res.ok) {
-          throw new Error("Something went wrong with fetching movies");
+          setMovies(data.Search);
+        } catch (err) {
+          // console.error(err.message);
+          setError(err.message);
+        } finally {
+          setIsLoading(false);
+          setError("");
         }
-        const data = await res.json();
-        if (data.Response === "False") throw new Error("Movie not found");
-
-        setMovies(data.Search);
-      } catch (err) {
-        console.error(err.message);
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
       }
-    }
-
-    fetchMovies();
-  }, []);
+      if (!query.length) {
+        setMovies([]);
+      }
+      fetchMovies();
+    },
+    [query]
+  );
 
   // useEffect doesnt return anything
   // useEffect(() => {
@@ -104,7 +128,7 @@ export default function App() {
   return (
     <>
       <NavBar>
-        <Search />
+        <Search query={query} setQuery={setQuery} />
         <NumResults movies={movies} />
       </NavBar>
 
@@ -160,9 +184,7 @@ function NumResults({ movies }) {
     </p>
   );
 }
-function Search() {
-  const [query, setQuery] = useState("");
-
+function Search({ query, setQuery }) {
   return (
     <input
       className="search"
