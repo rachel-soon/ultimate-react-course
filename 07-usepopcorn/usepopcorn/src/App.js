@@ -99,12 +99,15 @@ export default function App() {
   // How to use async await in useEffect hook
   useEffect(
     function () {
+      const controller = new AbortController();
+
       async function fetchMovies() {
         try {
           setIsLoading(true);
           setError("");
           const res = await fetch(
-            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
+            { signal: controller.signal }
           );
 
           if (!res.ok) {
@@ -118,7 +121,7 @@ export default function App() {
           console.log(data.Search);
         } catch (err) {
           // console.error(err.message);
-          setError(err.message);
+          if (err.name !== "AbortError") setError(err.message);
         } finally {
           setIsLoading(false);
           setError("");
@@ -128,6 +131,10 @@ export default function App() {
         setMovies([]);
       }
       fetchMovies();
+
+      return function () {
+        controller.abort();
+      };
     },
     [query]
   );
@@ -340,7 +347,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
       document.title = `Movie | ${title}`;
 
       return function () {
-        // this gets executed when the function is unmounted 
+        // this gets executed when the function is unmounted
         document.title = "usePopcorn";
         console.log("Clean up effect for movie");
       };
