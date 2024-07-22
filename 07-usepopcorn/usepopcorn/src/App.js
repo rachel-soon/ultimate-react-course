@@ -57,7 +57,7 @@ export default function App() {
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const query = "howl";
+  const query = "adfsdfsgsgd";
 
   // How to use async await in useEffect hook
   useEffect(function () {
@@ -73,12 +73,14 @@ export default function App() {
           throw new Error("Something went wrong with fetching movies");
         }
         const data = await res.json();
-        setMovies(data.Search);
+        if (data.Response === "False") throw new Error("Movie not found");
 
-        setIsLoading(false);
+        setMovies(data.Search);
       } catch (err) {
         console.error(err.message);
         setError(err.message);
+      } finally {
+        setIsLoading(false);
       }
     }
 
