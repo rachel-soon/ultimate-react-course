@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const tempMovieData = [
   {
@@ -50,9 +50,39 @@ const tempWatchedData = [
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
+const KEY = "e8bef740";
+
 export default function App() {
-  const [movies, setMovies] = useState(tempMovieData);
-  const [watched, setWatched] = useState(tempWatchedData);
+  const [movies, setMovies] = useState([]);
+  const [watched, setWatched] = useState([]);
+  const query = "howl";
+
+  // How to use async await in useEffect hook
+  useEffect(function () {
+    async function fetchMovies() {
+      const res = await fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=howl`);
+      const data = await res.json();
+      // console.log(movies);
+      setMovies(data.Search);
+      // console.log(data.Search);
+    }
+
+    fetchMovies();
+  }, []);
+
+  // useEffect doesnt return anything
+  // useEffect(() => {
+  //   fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=howl`)
+  //     .then((res) => res.json())
+  //     .then((data) => setMovies(data.Search));
+  // }, []);
+
+  // WRONG WAY TO FETCH DATA
+  // fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=howl`)
+  //   .then((res) => res.json())
+  //   .then((data) => setMovies(data.Search)); // this will cause an infinite loop
+
+  // setWatched([]);
 
   return (
     <>
