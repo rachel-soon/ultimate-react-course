@@ -57,7 +57,7 @@ export default function App() {
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const query = "adfsdfsgsgd";
+  const query = "howl's moving castle";
 
   // How to use async await in useEffect hook
   useEffect(function () {
@@ -112,7 +112,7 @@ export default function App() {
         <Box>
           {/* {isLoading ? <Loader /> : <MovieList movies={movies} />} */}
           {isLoading && <Loader />}
-          {isLoading && !error && <MovieList movies={movies} />}
+          {!isLoading && !error && <MovieList movies={movies} />}
           {error && <ErrorMessage message={error} />}
         </Box>
         <Box>
