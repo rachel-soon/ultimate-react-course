@@ -8,12 +8,20 @@ const KEY = "e8bef740";
 
 export default function App() {
   const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [query, setQuery] = useState("");
 
   const [selectedId, setSelectedId] = useState(null);
+
+  // React will call this on initial render and use any stored value as initial state
+  // this has to be a PURE function
+  // you can pass in a callback function in useState hook 
+  const [watched, setWatched] = useState(function () {
+    const storedValue = JSON.parse(localStorage.getItem("watched"));
+    return storedValue;
+  });
+  // const [watched, setWatched] = useState([]);
 
   function handleSelectMovie(id) {
     setSelectedId(() => (id === selectedId ? null : id));
@@ -31,6 +39,14 @@ export default function App() {
   function handleDeleteWatched(id) {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
+
+  // Everytime the watched array changes, the local storage will immediately sync
+  useEffect(
+    function () {
+      localStorage.setItem("watched", JSON.stringify([watched]));
+    },
+    [watched]
+  );
 
   // How to use async await in useEffect hook
   useEffect(
