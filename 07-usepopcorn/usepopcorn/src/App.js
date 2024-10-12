@@ -1,26 +1,27 @@
 import { useEffect, useRef, useState } from "react";
 import StarRating from "./StarRating";
+import { useMovies } from "./useMovies";
+import { useLocalStorageState } from "./useLocalStorage";
+
+const KEY = "e8bef740";
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
-const KEY = "e8bef740";
-
 export default function App() {
-  const [movies, setMovies] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
   const [query, setQuery] = useState("");
-
   const [selectedId, setSelectedId] = useState(null);
+  const { movies, isLoading, error } = useMovies(query); // wont close the movie
+
+  const [watched, setWatched] = useLocalStorageState([], "watched");
 
   // React will call this on initial render and use any stored value as initial state
   // this has to be a PURE function
-  // you can pass in a callback function in useState hook
-  const [watched, setWatched] = useState(function () {
-    const storedValue = JSON.parse(localStorage.getItem("watched"));
-    return storedValue;
-  });
+  // you can pass in a callback function in useState h-ook
+  // const [watched, setWatched] = useState(function () {
+  //   const storedValue = JSON.parse(localStorage.getItem("watched"));
+  //   return storedValue;
+  // });
   // const [watched, setWatched] = useState([]);
 
   function handleSelectMovie(id) {
@@ -39,62 +40,6 @@ export default function App() {
   function handleDeleteWatched(id) {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
-
-  // Everytime the watched array changes, the local storage will immediately sync
-  useEffect(
-    function () {
-      localStorage.setItem("watched", JSON.stringify([watched]));
-    },
-    [watched]
-  );
-
-  // How to use async await in useEffect hook
-  useEffect(
-    function () {
-      const controller = new AbortController();
-
-      async function fetchMovies() {
-        try {
-          setIsLoading(true);
-          setError("");
-          const res = await fetch(
-            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
-            { signal: controller.signal }
-          );
-
-          if (!res.ok) {
-            throw new Error("Something went wrong with fetching movies");
-          }
-          const data = await res.json();
-          if (data.Response === "False") throw new Error("Movie not found");
-
-          setMovies(data.Search);
-
-          // console.log(data.Search);
-        } catch (err) {
-          // console.log(err.message);
-          if (err.name !== "AbortError") {
-            setError(err.message);
-            console.log(err.message);
-          }
-        } finally {
-          setIsLoading(false);
-          setError("");
-        }
-      }
-      if (!query.length) {
-        setMovies([]);
-      }
-
-      handleCloseMovie();
-      fetchMovies();
-
-      return function () {
-        controller.abort();
-      };
-    },
-    [query]
-  );
 
   return (
     <>
@@ -254,6 +199,17 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
   const [isLoading, setIsLoading] = useState(false);
   const [userRating, setUserRating] = useState("");
 
+  const countRef = useRef(0);
+  let count = 0;
+
+  useEffect(
+    function () {
+      if (userRating) countRef.current = countRef.current + 1;
+      if (userRating) count++;
+    },
+    [userRating]
+  );
+
   const isWatched = watched.map((movie) => movie.imdbID).includes(selectedId);
 
   const watchedUserRating = watched.find(
@@ -292,8 +248,6 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
 
   const [avgRating, setAvgRating] = useState(0);
 
-  // console.log(title, year);
-
   function handleAdd() {
     const newWatchedMovie = {
       imdbID: selectedId,
@@ -303,10 +257,12 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
       imdbRating: Number(imdbRating),
       runtime: Number(runtime.split(" ").at(0)),
       userRating,
+      countRatingDecisions: countRef.current,
+      count,
     };
 
     onAddWatched(newWatchedMovie);
-    // onCloseMovie();
+    onCloseMovie();
 
     setAvgRating(Number(imdbRating));
     // alert(avgRating);
